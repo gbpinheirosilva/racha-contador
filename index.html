@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soccer Stats Tracker</title>
+    <!-- Firebase SDK (Non-module version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f4f8;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .player-management {
+            margin-bottom: 30px;
+        }
+        #player-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        #player-form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.remove {
+            background-color: #e74c3c;
+        }
+        button.remove:hover {
+            background-color: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        .stat-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .connection-status {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .reset-btn {
+            background-color: #e67e22;
+            margin-top: 20px;
+        }
+        .reset-btn:hover {
+            background-color: #d35400;
+        }
+        @media (max-width: 600px) {
+            .stat-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+            button {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>⚽ Soccer Stats Tracker</h1>
+    
+    <div id="connection-status" class="connection-status">Connecting...</div>
+    
+    <div class="container player-management">
+        <h2>Add Players</h2>
+        <form id="player-form">
+            <input type="text" id="player-name" placeholder="Enter player name" required>
+            <button type="submit">Add Player</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>Player Statistics</h2>
+        <table id="stats-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="stats-body"></tbody>
+        </table>
+        <button id="reset-stats" class="reset-btn">Reset All Stats</button>
+    </div>
+
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuCoDlP7gK5dhytmGU34UkqoppqflNQ74",
+            authDomain: "racha-contador.firebaseapp.com",
+            databaseURL: "https://racha-contador-default-rtdb.firebaseio.com",
+            projectId: "racha-contador",
+            storageBucket: "racha-contador.firebasestorage.app",
+            messagingSenderId: "55153558654",
+            appId: "1:55153558654:web:c71b66fea9b2dd1c5f842f",
+            measurementId: "G-DRXGE50GG2"
+        };
+
+        // Initialize Firebase with compatibility version
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const playersRef = database.ref('players');
+        
+        // Connection status check
+        const connectionStatus = document.getElementById('connection-status');
+        const connectedRef = database.ref('.info/connected');
+        
+        connectedRef.on('value', (snap) => {
+            if (snap.val() === true) {
+                connectionStatus.textContent = 'Connected - Live Updates Active';
+                connectionStatus.className = 'connection-status connected';
+            } else {
+                connectionStatus.textContent = 'Disconnected - Updates Paused';
+                connectionStatus.className = 'connection-status disconnected';
+            }
+        });
+
+        // Add new player
+        const playerForm = document.getElementById('player-form');
+        const playerNameInput = document.getElementById('player-name');
+        
+        playerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const playerName = playerNameInput.value.trim();
+            
+            if (playerName) {
+                // Check if player already exists
+                playersRef.once('value', (snapshot) => {
+                    let playerExists = false;
+                    snapshot.forEach((childSnapshot) => {
+                        if (childSnapshot.val().name.toLowerCase() === playerName.toLowerCase()) {
+                            playerExists = true;
+                        }
+                    });
+                    
+                    if (!playerExists) {
+                        playersRef.push({
+                            name: playerName,
+                            goals: 0,
+                            assists: 0
+                        });
+                        playerNameInput.value = '';
+                    } else {
+                        alert('This player already exists!');
+                    }
+                });
+            }
+        });
+
+        // Display players and their stats
+        const statsBody = document.getElementById('stats-body');
+        
+        playersRef.on('value', (snapshot) => {
+            statsBody.innerHTML = '';
+            
+            if (!snapshot.exists()) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="4" style="text-align: center;">No players added yet</td>
+                `;
+                statsBody.appendChild(row);
+                return;
+            }
+            
+            snapshot.forEach((childSnapshot) => {
+                const playerId = childSnapshot.key;
+                const player = childSnapshot.val();
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${player.name}</td>
+                    <td>${player.goals || 0}</td>
+                    <td>${player.assists || 0}</td>
+                    <td class="stat-buttons">
+                        <button class="add-goal" data-id="${playerId}">+Goal</button>
+                        <button class="add-assist" data-id="${playerId}">+Assist</button>
+                        <button class="remove" data-id="${playerId}">Remove</button>
+                    </td>
+                `;
+                statsBody.appendChild(row);
+            });
+            
+            // Add event listeners for buttons
+            document.querySelectorAll('.add-goal').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const playerId = e.target.getAttribute('data-id');
+                    const playerRef = playersRef.child(playerId);
+                    playerRef.once('value', (snapshot) => {
+                        const currentGoals = snapshot.val().goals || 0;
+                        playerRef.update({ goals: currentGoals + 1 });
+                    });
+                });
+            });
+            
+            document.querySelectorAll('.add-assist').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const playerId = e.target.getAttribute('data-id');
+                    const playerRef = playersRef.child(playerId);
+                    playerRef.once('value', (snapshot) => {
+                        const currentAssists = snapshot.val().assists || 0;
+                        playerRef.update({ assists: currentAssists + 1 });
+                    });
+                });
+            });
+            
+            document.querySelectorAll('.remove').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    if (confirm('Are you sure you want to remove this player?')) {
+                        const playerId = e.target.getAttribute('data-id');
+                        playersRef.child(playerId).remove();
+                    }
+                });
+            });
+        });
+
+        // Reset all stats
+        const resetButton = document.getElementById('reset-stats');
+        resetButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset ALL player statistics? This cannot be undone.')) {
+                playersRef.once('value', (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const playerId = childSnapshot.key;
+                        playersRef.child(playerId).update({
+                            goals: 0,
+                            assists: 0
+                        });
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
