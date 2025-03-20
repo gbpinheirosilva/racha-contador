@@ -113,6 +113,7 @@
     <h1>⚽ Soccer Stats Tracker</h1>
     
     <div id="connection-status" class="connection-status">Connecting...</div>
+    <div id="cooldown-info" class="connection-status" style="display: none;">Update cooldown: 60 seconds between updates per player</div>
     
     <div class="container player-management">
         <h2>Add Players</h2>
@@ -164,9 +165,11 @@
             if (snap.val() === true) {
                 connectionStatus.textContent = 'Connected - Live Updates Active';
                 connectionStatus.className = 'connection-status connected';
+                document.getElementById('cooldown-info').style.display = 'block';
             } else {
                 connectionStatus.textContent = 'Disconnected - Updates Paused';
                 connectionStatus.className = 'connection-status disconnected';
+                document.getElementById('cooldown-info').style.display = 'none';
             }
         });
 
@@ -239,22 +242,26 @@
             document.querySelectorAll('.add-goal').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const playerId = e.target.getAttribute('data-id');
-                    const playerRef = playersRef.child(playerId);
-                    playerRef.once('value', (snapshot) => {
-                        const currentGoals = snapshot.val().goals || 0;
-                        playerRef.update({ goals: currentGoals + 1 });
-                    });
+                    if (checkCooldown(playerId, 'goal')) {
+                        const playerRef = playersRef.child(playerId);
+                        playerRef.once('value', (snapshot) => {
+                            const currentGoals = snapshot.val().goals || 0;
+                            playerRef.update({ goals: currentGoals + 1 });
+                        });
+                    }
                 });
             });
             
             document.querySelectorAll('.add-assist').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const playerId = e.target.getAttribute('data-id');
-                    const playerRef = playersRef.child(playerId);
-                    playerRef.once('value', (snapshot) => {
-                        const currentAssists = snapshot.val().assists || 0;
-                        playerRef.update({ assists: currentAssists + 1 });
-                    });
+                    if (checkCooldown(playerId, 'assist')) {
+                        const playerRef = playersRef.child(playerId);
+                        playerRef.once('value', (snapshot) => {
+                            const currentAssists = snapshot.val().assists || 0;
+                            playerRef.update({ assists: currentAssists + 1 });
+                        });
+                    }
                 });
             });
             
@@ -268,19 +275,45 @@
             });
         });
 
+        // Track last update time
+        let lastUpdateTime = {};
+        
+        // Function to check cooldown
+        function checkCooldown(playerId, actionType) {
+            const now = Date.now();
+            const key = `${playerId}_${actionType}`;
+            
+            if (!lastUpdateTime[key] || (now - lastUpdateTime[key] >= 60000)) {
+                lastUpdateTime[key] = now;
+                return true;
+            } else {
+                const remainingSeconds = Math.ceil((60000 - (now - lastUpdateTime[key])) / 1000);
+                alert(`Please wait ${remainingSeconds} seconds before updating again.`);
+                return false;
+            }
+        }
+        
         // Reset all stats
         const resetButton = document.getElementById('reset-stats');
         resetButton.addEventListener('click', () => {
             if (confirm('Are you sure you want to reset ALL player statistics? This cannot be undone.')) {
-                playersRef.once('value', (snapshot) => {
-                    snapshot.forEach((childSnapshot) => {
-                        const playerId = childSnapshot.key;
-                        playersRef.child(playerId).update({
-                            goals: 0,
-                            assists: 0
+                // First get all players
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        // For each player, update goals and assists to 0
+                        snapshot.forEach((childSnapshot) => {
+                            const playerId = childSnapshot.key;
+                            playersRef.child(playerId).update({
+                                goals: 0,
+                                assists: 0
+                            });
                         });
+                        alert('All stats have been reset!');
+                    })
+                    .catch((error) => {
+                        console.error("Error resetting stats:", error);
+                        alert('There was an error resetting stats. Please try again.');
                     });
-                });
             }
         });
     </script>
