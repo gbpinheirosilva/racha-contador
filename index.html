@@ -117,10 +117,10 @@
             background-color: #9b59b6;
         }
         .match-history {
-            margin-top: 30px;
+            margin-top: 10px;
         }
-        .match-history h3 {
-            border-bottom: 1px solid #ddd;
+        .match-history h2 {
+            margin-top: 0;
             padding-bottom: 10px;
         }
         .match-date {
@@ -157,7 +157,7 @@
     </div>
 
     <div class="container">
-        <h2>Player Statistics</h2>
+        <h2>Current Match Statistics</h2>
         <table id="stats-table">
             <thead>
                 <tr>
@@ -172,6 +172,26 @@
         <button id="reset-stats" class="reset-btn">Reset All Stats</button>
         
         <div id="admin-controls"></div>
+    </div>
+    
+    <div class="container">
+        <h2>All-Time Leaderboard</h2>
+        <table id="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Total Goals</th>
+                    <th>Total Assists</th>
+                    <th>Games Played</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+        </table>
+    </div>
+    
+    <div class="container match-history">
+        <h2>Match History</h2>
+        <div id="match-history-content">Loading match history...</div>
     </div>
 
     <script>
@@ -217,14 +237,10 @@
             adminIndicator.style.color = 'white';
             document.body.insertBefore(adminIndicator, document.body.firstChild);
             
-            // Add RACHA ACABOU button
+            // Add RACHA ACABOU button (admin only)
             const adminControls = document.getElementById('admin-controls');
             adminControls.innerHTML = `
                 <button id="end-match" class="end-match-btn">RACHA ACABOU</button>
-                <div class="match-history container" style="display: none;">
-                    <h3>Match History</h3>
-                    <div id="match-history-content"></div>
-                </div>
             `;
         }
         
@@ -438,82 +454,154 @@
             }
         });
         
+        // Load All-Time Leaderboard and Match History for all users
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        const matchHistoryContent = document.getElementById('match-history-content');
+        
+        // Function to update the all-time leaderboard
+        function updateAllTimeLeaderboard() {
+            matchHistoryRef.once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No match history available yet</td></tr>';
+                    return;
+                }
+                
+                // Aggregate player stats across all matches
+                const allTimeStats = {};
+                
+                snapshot.forEach((matchSnapshot) => {
+                    const match = matchSnapshot.val();
+                    
+                    // Process each player in this match
+                    for (const playerId in match.players) {
+                        const player = match.players[playerId];
+                        const playerName = player.name;
+                        const goals = player.goals || 0;
+                        const assists = player.assists || 0;
+                        
+                        if (!allTimeStats[playerName]) {
+                            allTimeStats[playerName] = {
+                                goals: 0,
+                                assists: 0,
+                                gamesPlayed: 0
+                            };
+                        }
+                        
+                        allTimeStats[playerName].goals += goals;
+                        allTimeStats[playerName].assists += assists;
+                        allTimeStats[playerName].gamesPlayed += 1;
+                    }
+                });
+                
+                // Convert to array and sort by goals
+                const players = Object.keys(allTimeStats).map(name => ({
+                    name,
+                    ...allTimeStats[name]
+                }));
+                
+                players.sort((a, b) => b.goals - a.goals);
+                
+                // Update the leaderboard
+                leaderboardBody.innerHTML = '';
+                players.forEach(player => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${player.name}</td>
+                        <td>${player.goals}</td>
+                        <td>${player.assists}</td>
+                        <td>${player.gamesPlayed}</td>
+                    `;
+                    leaderboardBody.appendChild(row);
+                });
+            });
+        }
+        
+        // Function to update match history
+        function updateMatchHistory() {
+            matchHistoryRef.once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    matchHistoryContent.innerHTML = '<p style="text-align: center;">No match history available yet</p>';
+                    return;
+                }
+                
+                matchHistoryContent.innerHTML = '';
+                
+                // Convert to array and sort by date (newest first)
+                const matches = [];
+                snapshot.forEach((childSnapshot) => {
+                    matches.push({
+                        key: childSnapshot.key,
+                        data: childSnapshot.val()
+                    });
+                });
+                
+                matches.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+                
+                // Display match history
+                matches.forEach((match) => {
+                    const matchDate = new Date(match.data.date);
+                    const formattedDate = matchDate.toLocaleDateString() + ' ' + 
+                                         matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    const dateDiv = document.createElement('div');
+                    dateDiv.className = 'match-date';
+                    dateDiv.textContent = formattedDate;
+                    matchHistoryContent.appendChild(dateDiv);
+                    
+                    const matchTable = document.createElement('table');
+                    matchTable.className = 'history-table';
+                    matchTable.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Goals</th>
+                                <th>Assists</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body-${match.key}"></tbody>
+                    `;
+                    matchHistoryContent.appendChild(matchTable);
+                    
+                    const tableBody = document.getElementById(`history-body-${match.key}`);
+                    
+                    // Sort players by goals (highest first)
+                    const players = [];
+                    for (const playerId in match.data.players) {
+                        players.push({
+                            name: match.data.players[playerId].name,
+                            goals: match.data.players[playerId].goals || 0,
+                            assists: match.data.players[playerId].assists || 0
+                        });
+                    }
+                    
+                    players.sort((a, b) => b.goals - a.goals);
+                    
+                    players.forEach((player) => {
+                        const playerRow = document.createElement('tr');
+                        playerRow.innerHTML = `
+                            <td>${player.name}</td>
+                            <td>${player.goals}</td>
+                            <td>${player.assists}</td>
+                        `;
+                        tableBody.appendChild(playerRow);
+                    });
+                });
+            });
+        }
+        
+        // Initial load of leaderboard and match history
+        updateAllTimeLeaderboard();
+        updateMatchHistory();
+        
+        // Listen for changes to match history
+        matchHistoryRef.on('value', () => {
+            updateAllTimeLeaderboard();
+            updateMatchHistory();
+        });
+        
         // Add End Match functionality (admin only)
         if (adminMode) {
             const endMatchButton = document.getElementById('end-match');
-            const matchHistorySection = document.querySelector('.match-history');
-            const matchHistoryContent = document.getElementById('match-history-content');
-            
-            // Load match history
-            matchHistoryRef.on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    matchHistorySection.style.display = 'block';
-                    matchHistoryContent.innerHTML = '';
-                    
-                    // Convert to array and sort by date (newest first)
-                    const matches = [];
-                    snapshot.forEach((childSnapshot) => {
-                        matches.push({
-                            key: childSnapshot.key,
-                            data: childSnapshot.val()
-                        });
-                    });
-                    
-                    matches.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
-                    
-                    // Display match history
-                    matches.forEach((match) => {
-                        const matchDate = new Date(match.data.date);
-                        const formattedDate = matchDate.toLocaleDateString() + ' ' + 
-                                            matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        
-                        const dateDiv = document.createElement('div');
-                        dateDiv.className = 'match-date';
-                        dateDiv.textContent = formattedDate;
-                        matchHistoryContent.appendChild(dateDiv);
-                        
-                        const matchTable = document.createElement('table');
-                        matchTable.className = 'history-table';
-                        matchTable.innerHTML = `
-                            <thead>
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Goals</th>
-                                    <th>Assists</th>
-                                </tr>
-                            </thead>
-                            <tbody id="history-body-${match.key}"></tbody>
-                        `;
-                        matchHistoryContent.appendChild(matchTable);
-                        
-                        const tableBody = document.getElementById(`history-body-${match.key}`);
-                        
-                        // Sort players by goals (highest first)
-                        const players = [];
-                        for (const playerId in match.data.players) {
-                            players.push({
-                                name: match.data.players[playerId].name,
-                                goals: match.data.players[playerId].goals || 0,
-                                assists: match.data.players[playerId].assists || 0
-                            });
-                        }
-                        
-                        players.sort((a, b) => b.goals - a.goals);
-                        
-                        players.forEach((player) => {
-                            const playerRow = document.createElement('tr');
-                            playerRow.innerHTML = `
-                                <td>${player.name}</td>
-                                <td>${player.goals}</td>
-                                <td>${player.assists}</td>
-                            `;
-                            tableBody.appendChild(playerRow);
-                        });
-                    });
-                } else {
-                    matchHistorySection.style.display = 'none';
-                }
-            });
             
             // End match button functionality
             endMatchButton.addEventListener('click', () => {
@@ -555,6 +643,10 @@
                                 });
                                 
                                 alert('Match ended! Stats have been saved to history and reset.');
+                                
+                                // Update the leaderboard and match history
+                                updateAllTimeLeaderboard();
+                                updateMatchHistory();
                             }).catch(error => {
                                 console.error("Error saving match:", error);
                                 alert('Error saving match data. Please try again.');
