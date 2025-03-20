@@ -258,7 +258,7 @@
                     <td class="stat-buttons">
                         <button class="add-goal" data-id="${playerId}">+Goal</button>
                         <button class="add-assist" data-id="${playerId}">+Assist</button>
-                        <button class="remove" data-id="${playerId}">Remove</button>
+                        ${adminMode ? `<button class="remove" data-id="${playerId}">Remove</button>` : ''}
                     </td>
                 `;
                 statsBody.appendChild(row);
