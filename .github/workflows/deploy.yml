@@ -1,0 +1,44 @@
+name: Deploy to GBps
+
+on:
+  push:
+    branches:
+      - master  # or master depending on your default branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      # Optional: Add build steps here if you need to compile, minify or process files
+      # - name: Install dependencies
+      #   run: npm ci
+      #
+      # - name: Build project
+      #   run: npm run build
+        
+      - name: Deploy to GBps via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}         # ftp.gbps.com.br
+          username: ${{ secrets.FTP_USERNAME }}     # racha@racha.gbps.com.br
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21                                  # FTP port 21
+          protocol: ftp
+          local-dir: ./                             # Adjust if you have a build directory
+          server-dir: /                             # Deploy to the root directory
+          dangerous-clean-slate: false              # Set to true if you want to delete all files on the server first
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .github/**
+            README.md
