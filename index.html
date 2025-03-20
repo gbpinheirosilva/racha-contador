@@ -1,677 +1,474 @@
-.remove-all-btn {
-    background-color: #c0392b;
-    margin-top: 20px;
-    font-weight: bold;
-    margin-left: 10px;
-}
-.remove-all-btn:hover {
-    background-color: #e74c3c;
-}<!DOCTYPE html>
+// Validate player name length
+            if (playerName.length > 50) {
+                alert('Player name must be 50 characters or less.');
+                return;
+            }        .remove-all-btn {
+            background-color: #c0392b;
+            margin-top: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .remove-all-btn:hover {
+            background-color: #e74c3c;
+        }<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Racha Pé Pequeno</title>
-<!-- Firebase SDK (Non-module version) -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-<style>
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f0f4f8;
-}
-h1 {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 30px;
-}
-.container {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-}
-.player-management {
-    margin-bottom: 30px;
-}
-#player-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-#player-form input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-button:hover {
-    background-color: #2980b9;
-}
-button.remove {
-    background-color: #e74c3c;
-}
-button.remove:hover {
-    background-color: #c0392b;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-th {
-    background-color: #f2f2f2;
-    font-weight: 600;
-}
-.stat-buttons {
-    display: flex;
-    gap: 5px;
-}
-.connection-status {
-    text-align: center;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-.connected {
-    background-color: #d4edda;
-    color: #155724;
-}
-.disconnected {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-.reset-btn {
-    background-color: #e67e22;
-    margin-top: 20px;
-}
-.reset-btn:hover {
-    background-color: #d35400;
-}
-button.subtract-goal, button.subtract-assist {
-    background-color: #7f8c8d;
-    padding: 2px 6px;
-    margin-left: 5px;
-    font-weight: bold;
-}
-button.subtract-goal:hover, button.subtract-assist:hover {
-    background-color: #95a5a6;
-}
-.end-match-btn {
-    background-color: #8e44ad;
-    margin-top: 20px;
-    font-weight: bold;
-}
-.end-match-btn:hover {
-    background-color: #9b59b6;
-}
-.match-history {
-    margin-top: 10px;
-}
-.match-history h2 {
-    margin-top: 0;
-    padding-bottom: 10px;
-}
-.match-date {
-    font-weight: bold;
-    background-color: #f2f2f2;
-    padding: 8px;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-}
-@media (max-width: 600px) {
-    .stat-buttons {
-        flex-direction: column;
-        gap: 5px;
-    }
-    button {
-        margin-bottom: 5px;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Racha Pé Pequeno</title>
+    <!-- Firebase SDK (Non-module version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f4f8;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .player-management {
+            margin-bottom: 30px;
+        }
+        #player-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        #player-form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.remove {
+            background-color: #e74c3c;
+        }
+        button.remove:hover {
+            background-color: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        .stat-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .connection-status {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .reset-btn {
+            background-color: #e67e22;
+            margin-top: 20px;
+        }
+        .reset-btn:hover {
+            background-color: #d35400;
+        }
+        button.subtract-goal, button.subtract-assist {
+            background-color: #7f8c8d;
+            padding: 2px 6px;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        button.subtract-goal:hover, button.subtract-assist:hover {
+            background-color: #95a5a6;
+        }
+        .end-match-btn {
+            background-color: #8e44ad;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .end-match-btn:hover {
+            background-color: #9b59b6;
+        }
+        .match-history {
+            margin-top: 10px;
+        }
+        .match-history h2 {
+            margin-top: 0;
+            padding-bottom: 10px;
+        }
+        .match-date {
+            font-weight: bold;
+            background-color: #f2f2f2;
+            padding: 8px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        @media (max-width: 600px) {
+            .stat-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+            button {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>⚽ Racha Pé Pequeno</h1>
-
-<div id="connection-status" class="connection-status">Connecting...</div>
-<div id="cooldown-info" class="connection-status" style="display: none;">Updates: 60 sec cooldown per player | New players: 60 sec cooldown</div>
-
-<div class="container player-management">
-<h2>Add Players</h2>
-<form id="player-form">
-    <input type="text" id="player-name" placeholder="Enter player name" required>
-    <button type="submit">Add Player</button>
-</form>
-</div>
-
-<div class="container">
-<h2>Current Match Statistics</h2>
-<table id="stats-table">
-    <thead>
-        <tr>
-            <th>Player</th>
-            <th>Goals</th>
-            <th>Assists</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody id="stats-body"></tbody>
-</table>
-<button id="reset-stats" class="reset-btn">Reset All Stats</button>
-
-<div id="admin-controls"></div>
-</div>
-
-<div class="container">
-<h2>All-Time Leaderboard</h2>
-<table id="leaderboard-table">
-    <thead>
-        <tr>
-            <th>Player</th>
-            <th>Total Goals</th>
-            <th>Total Assists</th>
-            <th>Games Played</th>
-        </tr>
-    </thead>
-    <tbody id="leaderboard-body"></tbody>
-</table>
-</div>
-
-<div class="container match-history">
-<h2>Match History</h2>
-<div id="match-history-content">Loading match history...</div>
-</div>
-
-<script>
-// Your Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCuCoDlP7gK5dhytmGU34UkqoppqflNQ74",
-    authDomain: "racha-contador.firebaseapp.com",
-    databaseURL: "https://racha-contador-default-rtdb.firebaseio.com",
-    projectId: "racha-contador",
-    storageBucket: "racha-contador.firebasestorage.app",
-    messagingSenderId: "55153558654",
-    appId: "1:55153558654:web:c71b66fea9b2dd1c5f842f",
-    measurementId: "G-DRXGE50GG2"
-};
-
-// Initialize Firebase with compatibility version
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const playersRef = database.ref('players');
-const matchHistoryRef = database.ref('matchHistory');
-
-// Secret admin mode using URL parameter
-let adminMode = false;
-
-// Function to check URL parameters
-function getUrlParameter(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    var results = regex.exec(location.search);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
-
-// Check for admin parameter: ?admin=secret123
-const adminParam = getUrlParameter('admin');
-if (adminParam === 'secret123') {
-    adminMode = true;
+    <h1>⚽ Racha Pé Pequeno</h1>
     
-    // Add admin indicator
-    const adminIndicator = document.createElement('div');
-    adminIndicator.className = 'connection-status connected';
-    adminIndicator.textContent = '🔐 ADMIN MODE ACTIVE - Click player names to delete';
-    adminIndicator.style.backgroundColor = '#e74c3c';
-    adminIndicator.style.color = 'white';
-    document.body.insertBefore(adminIndicator, document.body.firstChild);
+    <div id="connection-status" class="connection-status">Connecting...</div>
+    <div id="cooldown-info" class="connection-status" style="display: none;">Updates: 60 sec cooldown per player | New players: 60 sec cooldown</div>
     
-    // Add RACHA ACABOU button (admin only)
-    const adminControls = document.getElementById('admin-controls');
-    adminControls.innerHTML = `
-        <button id="end-match" class="end-match-btn">RACHA ACABOU</button>
-        <button id="remove-all-players" class="remove-all-btn">REMOVE ALL PLAYERS</button>
-    `;
-}
+    <div class="container player-management">
+        <h2>Add Players</h2>
+        <form id="player-form">
+            <input type="text" id="player-name" placeholder="Enter player name" maxlength="50" required>
+            <button type="submit">Add Player</button>
+        </form>
+    </div>
 
-// Connection status check
-const connectionStatus = document.getElementById('connection-status');
-const connectedRef = database.ref('.info/connected');
-
-connectedRef.on('value', (snap) => {
-    if (snap.val() === true) {
-        connectionStatus.textContent = 'Connected - Live Updates Active';
-        connectionStatus.className = 'connection-status connected';
-        document.getElementById('cooldown-info').style.display = 'block';
-    } else {
-        connectionStatus.textContent = 'Disconnected - Updates Paused';
-        connectionStatus.className = 'connection-status disconnected';
-        document.getElementById('cooldown-info').style.display = 'none';
-    }
-});
-
-// Track last update time
-let lastUpdateTime = {};
-
-// Function to check cooldown
-function checkCooldown(playerId, actionType) {
-    const now = Date.now();
-    const key = `${playerId}_${actionType}`;
+    <div class="container">
+        <h2>Current Match Statistics</h2>
+        <table id="stats-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="stats-body"></tbody>
+        </table>
+        <button id="reset-stats" class="reset-btn">Reset All Stats</button>
+        
+        <div id="admin-controls"></div>
+    </div>
     
-    if (!lastUpdateTime[key] || (now - lastUpdateTime[key] >= 60000)) {
-        lastUpdateTime[key] = now;
-        return true;
-    } else {
-        const remainingSeconds = Math.ceil((60000 - (now - lastUpdateTime[key])) / 1000);
-        alert(`Please wait ${remainingSeconds} seconds before updating again.`);
-        return false;
-    }
-}
-
-// Track last player add time
-let lastPlayerAddTime = 0;
-
-// Add new player with cooldown
-const playerForm = document.getElementById('player-form');
-const playerNameInput = document.getElementById('player-name');
-
-playerForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const playerName = playerNameInput.value.trim();
+    <div class="container">
+        <h2>All-Time Leaderboard</h2>
+        <table id="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Total Goals</th>
+                    <th>Total Assists</th>
+                    <th>Games Played</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+        </table>
+    </div>
     
-    // Check player add cooldown (1 minute)
-    const now = Date.now();
-    if (now - lastPlayerAddTime < 60000 && !adminMode) {
-        const remainingSeconds = Math.ceil((60000 - (now - lastPlayerAddTime)) / 1000);
-        alert(`Please wait ${remainingSeconds} seconds before adding another player.`);
-        return;
-    }
-    
-    if (playerName) {
-        // Check if player already exists
-        playersRef.once('value', (snapshot) => {
-            let playerExists = false;
-            snapshot.forEach((childSnapshot) => {
-                if (childSnapshot.val().name.toLowerCase() === playerName.toLowerCase()) {
-                    playerExists = true;
-                }
-            });
+    <div class="container match-history">
+        <h2>Match History</h2>
+        <div id="match-history-content">Loading match history...</div>
+    </div>
+
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuCoDlP7gK5dhytmGU34UkqoppqflNQ74",
+            authDomain: "racha-contador.firebaseapp.com",
+            databaseURL: "https://racha-contador-default-rtdb.firebaseio.com",
+            projectId: "racha-contador",
+            storageBucket: "racha-contador.firebasestorage.app",
+            messagingSenderId: "55153558654",
+            appId: "1:55153558654:web:c71b66fea9b2dd1c5f842f",
+            measurementId: "G-DRXGE50GG2"
+        };
+
+        // Initialize Firebase with compatibility version
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const playersRef = database.ref('players');
+        const matchHistoryRef = database.ref('matchHistory');
+        
+        // Secret admin mode using URL parameter
+        let adminMode = false;
+        
+        // Function to check URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+        
+        // Check for admin parameter: ?admin=secret123
+        const adminParam = getUrlParameter('admin');
+        if (adminParam === 'secret123') {
+            adminMode = true;
             
-            if (!playerExists) {
-                playersRef.push({
-                    name: playerName,
-                    goals: 0,
-                    assists: 0
-                });
-                playerNameInput.value = '';
-                lastPlayerAddTime = now;
+            // Add admin indicator
+            const adminIndicator = document.createElement('div');
+            adminIndicator.className = 'connection-status connected';
+            adminIndicator.textContent = '🔐 ADMIN MODE ACTIVE - Click player names to delete';
+            adminIndicator.style.backgroundColor = '#e74c3c';
+            adminIndicator.style.color = 'white';
+            document.body.insertBefore(adminIndicator, document.body.firstChild);
+            
+            // Add RACHA ACABOU button (admin only)
+            const adminControls = document.getElementById('admin-controls');
+            adminControls.innerHTML = `
+                <button id="end-match" class="end-match-btn">RACHA ACABOU</button>
+                <button id="remove-all-players" class="remove-all-btn">REMOVE ALL PLAYERS</button>
+            `;
+        }
+        
+        // Connection status check
+        const connectionStatus = document.getElementById('connection-status');
+        const connectedRef = database.ref('.info/connected');
+        
+        connectedRef.on('value', (snap) => {
+            if (snap.val() === true) {
+                connectionStatus.textContent = 'Connected - Live Updates Active';
+                connectionStatus.className = 'connection-status connected';
+                document.getElementById('cooldown-info').style.display = 'block';
             } else {
-                alert('This player already exists!');
+                connectionStatus.textContent = 'Disconnected - Updates Paused';
+                connectionStatus.className = 'connection-status disconnected';
+                document.getElementById('cooldown-info').style.display = 'none';
             }
         });
-    }
-});
 
-// Display players and their stats
-const statsBody = document.getElementById('stats-body');
-
-playersRef.on('value', (snapshot) => {
-    statsBody.innerHTML = '';
-    
-    if (!snapshot.exists()) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td colspan="4" style="text-align: center;">No players added yet</td>
-        `;
-        statsBody.appendChild(row);
-        return;
-    }
-    
-    snapshot.forEach((childSnapshot) => {
-        const playerId = childSnapshot.key;
-        const player = childSnapshot.val();
+        // Track last update time
+        let lastUpdateTime = {};
         
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="player-name" data-id="${playerId}">${player.name}</td>
-            <td>${player.goals || 0} ${adminMode ? `<button class="subtract-goal" data-id="${playerId}">-</button>` : ''}</td>
-            <td>${player.assists || 0} ${adminMode ? `<button class="subtract-assist" data-id="${playerId}">-</button>` : ''}</td>
-            <td class="stat-buttons">
-                <button class="add-goal" data-id="${playerId}">+Goal</button>
-                <button class="add-assist" data-id="${playerId}">+Assist</button>
-                ${adminMode ? `<button class="remove" data-id="${playerId}">Remove</button>` : ''}
-            </td>
-        `;
-        statsBody.appendChild(row);
-    });
-    
-    // Add event listeners for buttons
-    document.querySelectorAll('.add-goal').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const playerId = e.target.getAttribute('data-id');
-            if (checkCooldown(playerId, 'goal')) {
-                const playerRef = playersRef.child(playerId);
-                playerRef.once('value', (snapshot) => {
-                    const currentGoals = snapshot.val().goals || 0;
-                    playerRef.update({ goals: currentGoals + 1 });
-                });
-            }
-        });
-    });
-    
-    document.querySelectorAll('.add-assist').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const playerId = e.target.getAttribute('data-id');
-            if (checkCooldown(playerId, 'assist')) {
-                const playerRef = playersRef.child(playerId);
-                playerRef.once('value', (snapshot) => {
-                    const currentAssists = snapshot.val().assists || 0;
-                    playerRef.update({ assists: currentAssists + 1 });
-                });
-            }
-        });
-    });
-    
-    // Add event listeners for remove buttons
-    document.querySelectorAll('.remove').forEach(button => {
-        button.addEventListener('click', (e) => {
-            if (confirm('Are you sure you want to remove this player?')) {
-                const playerId = e.target.getAttribute('data-id');
-                playersRef.child(playerId).remove();
-            }
-        });
-    });
-    
-    // Add event listeners for decrement buttons (admin only)
-    if (adminMode) {
-        document.querySelectorAll('.subtract-goal').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const playerId = e.target.getAttribute('data-id');
-                const playerRef = playersRef.child(playerId);
-                playerRef.once('value', (snapshot) => {
-                    const currentGoals = snapshot.val().goals || 0;
-                    if (currentGoals > 0) {
-                        playerRef.update({ goals: currentGoals - 1 });
-                    }
-                });
-            });
-        });
-        
-        document.querySelectorAll('.subtract-assist').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const playerId = e.target.getAttribute('data-id');
-                const playerRef = playersRef.child(playerId);
-                playerRef.once('value', (snapshot) => {
-                    const currentAssists = snapshot.val().assists || 0;
-                    if (currentAssists > 0) {
-                        playerRef.update({ assists: currentAssists - 1 });
-                    }
-                });
-            });
-        });
-    }
-    
-    // Admin quick delete by clicking player name
-    document.querySelectorAll('.player-name').forEach(nameCell => {
-        const playerId = nameCell.getAttribute('data-id');
-        
-        // Apply admin styling if admin mode is active
-        if (adminMode) {
-            nameCell.style.cursor = 'pointer';
-            nameCell.style.textDecoration = 'underline';
-            nameCell.style.color = '#e74c3c';
+        // Function to check cooldown
+        function checkCooldown(playerId, actionType) {
+            const now = Date.now();
+            const key = `${playerId}_${actionType}`;
             
-            // Add click event only in admin mode
-            nameCell.addEventListener('click', () => {
-                const playerName = nameCell.textContent;
-                if (confirm(`ADMIN MODE: Delete ${playerName}?`)) {
-                    playersRef.child(playerId).remove();
-                }
-            });
-        }
-    });
-});
-
-// Reset all stats
-const resetButton = document.getElementById('reset-stats');
-resetButton.addEventListener('click', () => {
-    if (confirm('Are you sure you want to reset ALL player statistics? This cannot be undone.')) {
-        // First get all players
-        playersRef.once('value')
-            .then((snapshot) => {
-                // For each player, update goals and assists to 0
-                snapshot.forEach((childSnapshot) => {
-                    const playerId = childSnapshot.key;
-                    playersRef.child(playerId).update({
-                        goals: 0,
-                        assists: 0
-                    });
-                });
-                alert('All stats have been reset!');
-            })
-            .catch((error) => {
-                console.error("Error resetting stats:", error);
-                alert('There was an error resetting stats. Please try again.');
-            });
-    }
-});
-
-// Load All-Time Leaderboard and Match History for all users
-const leaderboardBody = document.getElementById('leaderboard-body');
-const matchHistoryContent = document.getElementById('match-history-content');
-
-// Function to update the all-time leaderboard
-function updateAllTimeLeaderboard() {
-    matchHistoryRef.once('value', (snapshot) => {
-        if (!snapshot.exists()) {
-            leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No match history available yet</td></tr>';
-            return;
+            if (!lastUpdateTime[key] || (now - lastUpdateTime[key] >= 60000)) {
+                lastUpdateTime[key] = now;
+                return true;
+            } else {
+                const remainingSeconds = Math.ceil((60000 - (now - lastUpdateTime[key])) / 1000);
+                alert(`Please wait ${remainingSeconds} seconds before updating again.`);
+                return false;
+            }
         }
         
-        // Aggregate player stats across all matches
-        const allTimeStats = {};
+        // Track last player add time
+        let lastPlayerAddTime = 0;
+
+        // Add new player with cooldown
+        const playerForm = document.getElementById('player-form');
+        const playerNameInput = document.getElementById('player-name');
         
-        snapshot.forEach((matchSnapshot) => {
-            const match = matchSnapshot.val();
+        playerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const playerName = playerNameInput.value.trim();
             
-            // Process each player in this match
-            for (const playerId in match.players) {
-                const player = match.players[playerId];
-                const playerName = player.name;
-                const goals = player.goals || 0;
-                const assists = player.assists || 0;
-                
-                if (!allTimeStats[playerName]) {
-                    allTimeStats[playerName] = {
-                        goals: 0,
-                        assists: 0,
-                        gamesPlayed: 0
-                    };
+            // Check player add cooldown (1 minute)
+            const now = Date.now();
+            if (now - lastPlayerAddTime < 60000 && !adminMode) {
+                const remainingSeconds = Math.ceil((60000 - (now - lastPlayerAddTime)) / 1000);
+                alert(`Please wait ${remainingSeconds} seconds before adding another player.`);
+                return;
+            }
+            
+            if (playerName) {
+                // Validate player name length
+                if (playerName.length > 50) {
+                    alert('Player name must be 50 characters or less.');
+                    return;
                 }
                 
-                allTimeStats[playerName].goals += goals;
-                allTimeStats[playerName].assists += assists;
-                allTimeStats[playerName].gamesPlayed += 1;
-            }
-        });
-        
-        // Convert to array and sort by goals
-        const players = Object.keys(allTimeStats).map(name => ({
-            name,
-            ...allTimeStats[name]
-        }));
-        
-        players.sort((a, b) => b.goals - a.goals);
-        
-        // Update the leaderboard
-        leaderboardBody.innerHTML = '';
-        players.forEach(player => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${player.name}</td>
-                <td>${player.goals}</td>
-                <td>${player.assists}</td>
-                <td>${player.gamesPlayed}</td>
-            `;
-            leaderboardBody.appendChild(row);
-        });
-    });
-}
-
-// Function to update match history
-function updateMatchHistory() {
-    matchHistoryRef.once('value', (snapshot) => {
-        if (!snapshot.exists()) {
-            matchHistoryContent.innerHTML = '<p style="text-align: center;">No match history available yet</p>';
-            return;
-        }
-        
-        matchHistoryContent.innerHTML = '';
-        
-        // Convert to array and sort by date (newest first)
-        const matches = [];
-        snapshot.forEach((childSnapshot) => {
-            matches.push({
-                key: childSnapshot.key,
-                data: childSnapshot.val()
-            });
-        });
-        
-        matches.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
-        
-        // Display match history
-        matches.forEach((match) => {
-            const matchDate = new Date(match.data.date);
-            const formattedDate = matchDate.toLocaleDateString() + ' ' + 
-                                 matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            const dateDiv = document.createElement('div');
-            dateDiv.className = 'match-date';
-            dateDiv.textContent = formattedDate;
-            matchHistoryContent.appendChild(dateDiv);
-            
-            const matchTable = document.createElement('table');
-            matchTable.className = 'history-table';
-            matchTable.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Goals</th>
-                        <th>Assists</th>
-                    </tr>
-                </thead>
-                <tbody id="history-body-${match.key}"></tbody>
-            `;
-            matchHistoryContent.appendChild(matchTable);
-            
-            const tableBody = document.getElementById(`history-body-${match.key}`);
-            
-            // Sort players by goals (highest first)
-            const players = [];
-            for (const playerId in match.data.players) {
-                players.push({
-                    name: match.data.players[playerId].name,
-                    goals: match.data.players[playerId].goals || 0,
-                    assists: match.data.players[playerId].assists || 0
-                });
-            }
-            
-            players.sort((a, b) => b.goals - a.goals);
-            
-            players.forEach((player) => {
-                const playerRow = document.createElement('tr');
-                playerRow.innerHTML = `
-                    <td>${player.name}</td>
-                    <td>${player.goals}</td>
-                    <td>${player.assists}</td>
-                `;
-                tableBody.appendChild(playerRow);
-            });
-        });
-    });
-}
-
-// Initial load of leaderboard and match history
-updateAllTimeLeaderboard();
-updateMatchHistory();
-
-// Listen for changes to match history
-matchHistoryRef.on('value', () => {
-    updateAllTimeLeaderboard();
-    updateMatchHistory();
-});
-
-// Add End Match functionality (admin only)
-if (adminMode) {
-    const endMatchButton = document.getElementById('end-match');
-    
-    // Remove all players button functionality
-    const removeAllPlayersButton = document.getElementById('remove-all-players');
-    removeAllPlayersButton.addEventListener('click', () => {
-        if (confirm('⚠️ WARNING: Are you sure you want to REMOVE ALL PLAYERS? This cannot be undone.')) {
-            if (confirm('⚠️ FINAL WARNING: This will permanently delete ALL players. Are you absolutely sure?')) {
-                playersRef.remove()
-                  .then(() => {
-                      alert('All players have been removed successfully.');
-                  })
-                  .catch(error => {
-                      console.error("Error removing players:", error);
-                      alert('Error removing players. Please try again.');
-                  });
-            }
-        }
-    });
-    
-    // End match button functionality
-    endMatchButton.addEventListener('click', () => {
-        if (confirm('Are you sure you want to end this match? Current stats will be saved to history and reset.')) {
-            // Get current players data
-            playersRef.once('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    // First, create a new match entry with current date and players
-                    const now = new Date();
-                    const matchData = {
-                        date: now.toISOString(),
-                        players: {}
-                    };
-                    
-                    // Add player data to match
+                // Check if player already exists
+                playersRef.once('value', (snapshot) => {
+                    let playerExists = false;
                     snapshot.forEach((childSnapshot) => {
-                        const playerId = childSnapshot.key;
-                        const player = childSnapshot.val();
-                        
-                        // Only save players with goals or assists
-                        if ((player.goals && player.goals > 0) || (player.assists && player.assists > 0)) {
-                            matchData.players[playerId] = {
-                                name: player.name,
-                                goals: player.goals || 0,
-                                assists: player.assists || 0
-                            };
+                        if (childSnapshot.val().name.toLowerCase() === playerName.toLowerCase()) {
+                            playerExists = true;
                         }
                     });
                     
-                    // Save to match history
-                    matchHistoryRef.push(matchData).then(() => {
-                        // Reset all player stats
+                    if (!playerExists) {
+                        playersRef.push({
+                            name: playerName,
+                            goals: 0,
+                            assists: 0
+                        });
+                        playerNameInput.value = '';
+                        lastPlayerAddTime = now;
+                    } else {
+                        alert('This player already exists!');
+                    }
+                });
+            }
+        });
+
+        // Display players and their stats
+        const statsBody = document.getElementById('stats-body');
+        
+        playersRef.on('value', (snapshot) => {
+            statsBody.innerHTML = '';
+            
+            if (!snapshot.exists()) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="4" style="text-align: center;">No players added yet</td>
+                `;
+                statsBody.appendChild(row);
+                return;
+            }
+            
+            snapshot.forEach((childSnapshot) => {
+                const playerId = childSnapshot.key;
+                const player = childSnapshot.val();
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="player-name" data-id="${playerId}">${player.name}</td>
+                    <td>${player.goals || 0} ${adminMode ? `<button class="subtract-goal" data-id="${playerId}">-</button>` : ''}</td>
+                    <td>${player.assists || 0} ${adminMode ? `<button class="subtract-assist" data-id="${playerId}">-</button>` : ''}</td>
+                    <td class="stat-buttons">
+                        <button class="add-goal" data-id="${playerId}">+Goal</button>
+                        <button class="add-assist" data-id="${playerId}">+Assist</button>
+                        ${adminMode ? `<button class="remove" data-id="${playerId}">Remove</button>` : ''}
+                    </td>
+                `;
+                statsBody.appendChild(row);
+            });
+            
+            // Add event listeners for buttons
+            document.querySelectorAll('.add-goal').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const playerId = e.target.getAttribute('data-id');
+                    if (checkCooldown(playerId, 'goal')) {
+                        const playerRef = playersRef.child(playerId);
+                        playerRef.once('value', (snapshot) => {
+                            const currentGoals = snapshot.val().goals || 0;
+                            playerRef.update({ goals: currentGoals + 1 });
+                        });
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.add-assist').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const playerId = e.target.getAttribute('data-id');
+                    if (checkCooldown(playerId, 'assist')) {
+                        const playerRef = playersRef.child(playerId);
+                        playerRef.once('value', (snapshot) => {
+                            const currentAssists = snapshot.val().assists || 0;
+                            playerRef.update({ assists: currentAssists + 1 });
+                        });
+                    }
+                });
+            });
+            
+            // Add event listeners for remove buttons
+            document.querySelectorAll('.remove').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    if (confirm('Are you sure you want to remove this player?')) {
+                        const playerId = e.target.getAttribute('data-id');
+                        playersRef.child(playerId).remove();
+                    }
+                });
+            });
+            
+            // Add event listeners for decrement buttons (admin only)
+            if (adminMode) {
+                document.querySelectorAll('.subtract-goal').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const playerId = e.target.getAttribute('data-id');
+                        const playerRef = playersRef.child(playerId);
+                        playerRef.once('value', (snapshot) => {
+                            const currentGoals = snapshot.val().goals || 0;
+                            if (currentGoals > 0) {
+                                playerRef.update({ goals: currentGoals - 1 });
+                            }
+                        });
+                    });
+                });
+                
+                document.querySelectorAll('.subtract-assist').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const playerId = e.target.getAttribute('data-id');
+                        const playerRef = playersRef.child(playerId);
+                        playerRef.once('value', (snapshot) => {
+                            const currentAssists = snapshot.val().assists || 0;
+                            if (currentAssists > 0) {
+                                playerRef.update({ assists: currentAssists - 1 });
+                            }
+                        });
+                    });
+                });
+            }
+            
+            // Admin quick delete by clicking player name
+            document.querySelectorAll('.player-name').forEach(nameCell => {
+                const playerId = nameCell.getAttribute('data-id');
+                
+                // Apply admin styling if admin mode is active
+                if (adminMode) {
+                    nameCell.style.cursor = 'pointer';
+                    nameCell.style.textDecoration = 'underline';
+                    nameCell.style.color = '#e74c3c';
+                    
+                    // Add click event only in admin mode
+                    nameCell.addEventListener('click', () => {
+                        const playerName = nameCell.textContent;
+                        if (confirm(`ADMIN MODE: Delete ${playerName}?`)) {
+                            playersRef.child(playerId).remove();
+                        }
+                    });
+                }
+            });
+        });
+
+        // Reset all stats
+        const resetButton = document.getElementById('reset-stats');
+        resetButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset ALL player statistics? This cannot be undone.')) {
+                // First get all players
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        // For each player, update goals and assists to 0
                         snapshot.forEach((childSnapshot) => {
                             const playerId = childSnapshot.key;
                             playersRef.child(playerId).update({
@@ -679,23 +476,236 @@ if (adminMode) {
                                 assists: 0
                             });
                         });
-                        
-                        alert('Match ended! Stats have been saved to history and reset.');
-                        
-                        // Update the leaderboard and match history
-                        updateAllTimeLeaderboard();
-                        updateMatchHistory();
-                    }).catch(error => {
-                        console.error("Error saving match:", error);
-                        alert('Error saving match data. Please try again.');
+                        alert('All stats have been reset!');
+                    })
+                    .catch((error) => {
+                        console.error("Error resetting stats:", error);
+                        alert('There was an error resetting stats. Please try again.');
                     });
-                } else {
-                    alert('No player data to save.');
+            }
+        });
+        
+        // Load All-Time Leaderboard and Match History for all users
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        const matchHistoryContent = document.getElementById('match-history-content');
+        
+        // Function to update the all-time leaderboard
+        function updateAllTimeLeaderboard() {
+            matchHistoryRef.once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No match history available yet</td></tr>';
+                    return;
+                }
+                
+                // Aggregate player stats across all matches
+                const allTimeStats = {};
+                
+                snapshot.forEach((matchSnapshot) => {
+                    const match = matchSnapshot.val();
+                    
+                    // Process each player in this match
+                    for (const playerId in match.players) {
+                        const player = match.players[playerId];
+                        const playerName = player.name;
+                        const goals = player.goals || 0;
+                        const assists = player.assists || 0;
+                        
+                        if (!allTimeStats[playerName]) {
+                            allTimeStats[playerName] = {
+                                goals: 0,
+                                assists: 0,
+                                gamesPlayed: 0
+                            };
+                        }
+                        
+                        allTimeStats[playerName].goals += goals;
+                        allTimeStats[playerName].assists += assists;
+                        allTimeStats[playerName].gamesPlayed += 1;
+                    }
+                });
+                
+                // Convert to array and sort by goals
+                const players = Object.keys(allTimeStats).map(name => ({
+                    name,
+                    ...allTimeStats[name]
+                }));
+                
+                players.sort((a, b) => b.goals - a.goals);
+                
+                // Update the leaderboard
+                leaderboardBody.innerHTML = '';
+                players.forEach(player => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${player.name}</td>
+                        <td>${player.goals}</td>
+                        <td>${player.assists}</td>
+                        <td>${player.gamesPlayed}</td>
+                    `;
+                    leaderboardBody.appendChild(row);
+                });
+            });
+        }
+        
+        // Function to update match history
+        function updateMatchHistory() {
+            matchHistoryRef.once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    matchHistoryContent.innerHTML = '<p style="text-align: center;">No match history available yet</p>';
+                    return;
+                }
+                
+                matchHistoryContent.innerHTML = '';
+                
+                // Convert to array and sort by date (newest first)
+                const matches = [];
+                snapshot.forEach((childSnapshot) => {
+                    matches.push({
+                        key: childSnapshot.key,
+                        data: childSnapshot.val()
+                    });
+                });
+                
+                matches.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+                
+                // Display match history
+                matches.forEach((match) => {
+                    const matchDate = new Date(match.data.date);
+                    const formattedDate = matchDate.toLocaleDateString() + ' ' + 
+                                         matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    const dateDiv = document.createElement('div');
+                    dateDiv.className = 'match-date';
+                    dateDiv.textContent = formattedDate;
+                    matchHistoryContent.appendChild(dateDiv);
+                    
+                    const matchTable = document.createElement('table');
+                    matchTable.className = 'history-table';
+                    matchTable.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Goals</th>
+                                <th>Assists</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body-${match.key}"></tbody>
+                    `;
+                    matchHistoryContent.appendChild(matchTable);
+                    
+                    const tableBody = document.getElementById(`history-body-${match.key}`);
+                    
+                    // Sort players by goals (highest first)
+                    const players = [];
+                    for (const playerId in match.data.players) {
+                        players.push({
+                            name: match.data.players[playerId].name,
+                            goals: match.data.players[playerId].goals || 0,
+                            assists: match.data.players[playerId].assists || 0
+                        });
+                    }
+                    
+                    players.sort((a, b) => b.goals - a.goals);
+                    
+                    players.forEach((player) => {
+                        const playerRow = document.createElement('tr');
+                        playerRow.innerHTML = `
+                            <td>${player.name}</td>
+                            <td>${player.goals}</td>
+                            <td>${player.assists}</td>
+                        `;
+                        tableBody.appendChild(playerRow);
+                    });
+                });
+            });
+        }
+        
+        // Initial load of leaderboard and match history
+        updateAllTimeLeaderboard();
+        updateMatchHistory();
+        
+        // Listen for changes to match history
+        matchHistoryRef.on('value', () => {
+            updateAllTimeLeaderboard();
+            updateMatchHistory();
+        });
+        
+        // Add End Match functionality (admin only)
+        if (adminMode) {
+            const endMatchButton = document.getElementById('end-match');
+            
+            // Remove all players button functionality
+            const removeAllPlayersButton = document.getElementById('remove-all-players');
+            removeAllPlayersButton.addEventListener('click', () => {
+                if (confirm('⚠️ WARNING: Are you sure you want to REMOVE ALL PLAYERS? This cannot be undone.')) {
+                    if (confirm('⚠️ FINAL WARNING: This will permanently delete ALL players. Are you absolutely sure?')) {
+                        playersRef.remove()
+                          .then(() => {
+                              alert('All players have been removed successfully.');
+                          })
+                          .catch(error => {
+                              console.error("Error removing players:", error);
+                              alert('Error removing players. Please try again.');
+                          });
+                    }
+                }
+            });
+            
+            // End match button functionality
+            endMatchButton.addEventListener('click', () => {
+                if (confirm('Are you sure you want to end this match? Current stats will be saved to history and reset.')) {
+                    // Get current players data
+                    playersRef.once('value', (snapshot) => {
+                        if (snapshot.exists()) {
+                            // First, create a new match entry with current date and players
+                            const now = new Date();
+                            const matchData = {
+                                date: now.toISOString(),
+                                players: {}
+                            };
+                            
+                            // Add player data to match
+                            snapshot.forEach((childSnapshot) => {
+                                const playerId = childSnapshot.key;
+                                const player = childSnapshot.val();
+                                
+                                // Only save players with goals or assists
+                                if ((player.goals && player.goals > 0) || (player.assists && player.assists > 0)) {
+                                    matchData.players[playerId] = {
+                                        name: player.name,
+                                        goals: player.goals || 0,
+                                        assists: player.assists || 0
+                                    };
+                                }
+                            });
+                            
+                            // Save to match history
+                            matchHistoryRef.push(matchData).then(() => {
+                                // Reset all player stats
+                                snapshot.forEach((childSnapshot) => {
+                                    const playerId = childSnapshot.key;
+                                    playersRef.child(playerId).update({
+                                        goals: 0,
+                                        assists: 0
+                                    });
+                                });
+                                
+                                alert('Match ended! Stats have been saved to history and reset.');
+                                
+                                // Update the leaderboard and match history
+                                updateAllTimeLeaderboard();
+                                updateMatchHistory();
+                            }).catch(error => {
+                                console.error("Error saving match:", error);
+                                alert('Error saving match data. Please try again.');
+                            });
+                        } else {
+                            alert('No player data to save.');
+                        }
+                    });
                 }
             });
         }
-    });
-}
-</script>
+    </script>
 </body>
 </html>
